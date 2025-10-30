@@ -1,0 +1,58 @@
+The NIC is too poor, because I'm in hoom. But I expect the performance of 1Gb/10Gb/100Gb NICs' combination.
+
+## MPTCP tests
+Using 'mpirun -np 2 -N 2 -hostfile hostfile -pernode --allow-run-as-root  \
+        -x NCCL_DEBUG=INFO \
+        /home/dwyane/work/Code/NCCL/nccl_test/nccl-tests/build/sendrecv_perf_mptcp_mpi -b 8M -e 16M -f 2 -g 1 -c 0'
+to test, and '-x NCCL_MPTCP_DISABLE' to decide TCP or MPTCP. MPTCP by default.
+
+The NIC is too poor, because it is a homemade sceen. But I expect the performance of 1Gb/10Gb/100Gb NICs' combination. 
+
+TCP:
+                                                              out-of-place                       in-place          
+       size         count      type   redop    root     time   algbw   busbw  #wrong     time   algbw   busbw  #wrong
+        (B)    (elements)                               (us)  (GB/s)  (GB/s)            (us)  (GB/s)  (GB/s)       
+thinkbook16p:68744:68744 [0] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+thinkbook16p:68744:68744 [0] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512
+thinkbook16p:68744:68744 [0] NCCL INFO 6 coll channels, 6 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+thinkbook16p:68744:68744 [0] NCCL INFO ncclCommInitRankConfig comm 0x5d74a7c37200 rank 1 nranks 2 cudaDev 0 nvmlDev 0 busId 1000 commId 0x14eeb77f91afa4e9 - Init COMPLETE
+thinkbook16p:68744:68744 [0] NCCL INFO Init timings - ncclCommInitRankConfig: rank 1 nranks 2 total 0.25 (kernels 0.21, alloc 0.02, bootstrap 0.01, allgathers 0.00, topo 0.01, graphs 0.00, connections 0.00, rest 0.00)
+thunder:598556:598587 [0] NCCL INFO [Proxy Progress] Device 0 CPU core 0
+thunder:598556:598556 [0] NCCL INFO Channel 04/1 : 1[0] -> 0[0] [receive] via NET/Socket/1/Shared
+thunder:598556:598556 [0] NCCL INFO Channel 05/1 : 1[0] -> 0[0] [receive] via NET/Socket/1/Shared
+thunder:598556:598556 [0] NCCL INFO Channel 04/1 : 0[0] -> 1[0] [send] via NET/Socket/1/Shared
+thunder:598556:598556 [0] NCCL INFO Channel 05/1 : 0[0] -> 1[0] [send] via NET/Socket/1/Shared
+thinkbook16p:68744:68753 [0] NCCL INFO [Proxy Progress] Device 0 CPU core 0
+thinkbook16p:68744:68744 [0] NCCL INFO Channel 04/1 : 0[0] -> 1[0] [receive] via NET/Socket/1/Shared
+thinkbook16p:68744:68744 [0] NCCL INFO Channel 05/1 : 0[0] -> 1[0] [receive] via NET/Socket/1/Shared
+thinkbook16p:68744:68744 [0] NCCL INFO Channel 04/1 : 1[0] -> 0[0] [send] via NET/Socket/1/Shared
+thinkbook16p:68744:68744 [0] NCCL INFO Channel 05/1 : 1[0] -> 0[0] [send] via NET/Socket/1/Shared
+     8388608       2097152     float     sum      -1   254678    0.03    0.03    N/A   259595    0.03    0.03    N/A
+    16777216       4194304     float     sum      -1   516746    0.03    0.03    N/A   524273    0.03    0.03 
+ Out of bounds values : 0 OK
+ Avg bus bandwidth    : 0.0324301 
+
+MPTCP:
+                                                              out-of-place                       in-place          
+       size         count      type   redop    root     time   algbw   busbw  #wrong     time   algbw   busbw  #wrong
+        (B)    (elements)                               (us)  (GB/s)  (GB/s)            (us)  (GB/s)  (GB/s)       
+thinkbook16p:68918:68918 [0] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so
+thinkbook16p:68918:68918 [0] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512
+thinkbook16p:68918:68918 [0] NCCL INFO 6 coll channels, 6 collnet channels, 0 nvls channels, 8 p2p channels, 2 p2p channels per peer
+thinkbook16p:68918:68918 [0] NCCL INFO ncclCommInitRankConfig comm 0x58a1c837e430 rank 1 nranks 2 cudaDev 0 nvmlDev 0 busId 1000 commId 0xccb4edd89f671172 - Init COMPLETE
+thinkbook16p:68918:68918 [0] NCCL INFO Init timings - ncclCommInitRankConfig: rank 1 nranks 2 total 0.29 (kernels 0.24, alloc 0.02, bootstrap 0.02, allgathers 0.00, topo 0.01, graphs 0.00, connections 0.00, rest 0.00)
+thunder:601149:601181 [0] NCCL INFO [Proxy Progress] Device 0 CPU core 1
+thunder:601149:601149 [0] NCCL INFO Channel 04/1 : 1[0] -> 0[0] [receive] via NET/Socket/1/Shared
+thunder:601149:601149 [0] NCCL INFO Channel 05/1 : 1[0] -> 0[0] [receive] via NET/Socket/1/Shared
+thunder:601149:601149 [0] NCCL INFO Channel 04/1 : 0[0] -> 1[0] [send] via NET/Socket/1/Shared
+thunder:601149:601149 [0] NCCL INFO Channel 05/1 : 0[0] -> 1[0] [send] via NET/Socket/1/Shared
+thinkbook16p:68918:68927 [0] NCCL INFO [Proxy Progress] Device 0 CPU core 0
+thinkbook16p:68918:68918 [0] NCCL INFO Channel 04/1 : 0[0] -> 1[0] [receive] via NET/Socket/1/Shared
+thinkbook16p:68918:68918 [0] NCCL INFO Channel 05/1 : 0[0] -> 1[0] [receive] via NET/Socket/1/Shared
+thinkbook16p:68918:68918 [0] NCCL INFO Channel 04/1 : 1[0] -> 0[0] [send] via NET/Socket/1/Shared
+thinkbook16p:68918:68918 [0] NCCL INFO Channel 05/1 : 1[0] -> 0[0] [send] via NET/Socket/1/Shared
+     8388608       2097152     float     sum      -1   162189    0.05    0.05    N/A   171595    0.05    0.05    N/A
+    16777216       4194304     float     sum      -1   343882    0.05    0.05    N/A   333028    0.05    0.05    N/A
+thunder:601149:601149 [0] NCCL INFO comm 0x56d435fce6e0 rank 0 nranks 2 cudaDev 0 busId 1000 - Destroy COMPLETE
+ Out of bounds values : 0 OK
+ Avg bus bandwidth    : 0.0499432 
