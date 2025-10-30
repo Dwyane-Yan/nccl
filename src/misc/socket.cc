@@ -549,7 +549,11 @@ static ncclResult_t socketFinalizeAccept(struct ncclSocket* sock) {
 static ncclResult_t socketResetFd(struct ncclSocket* sock) {
   ncclResult_t ret = ncclSuccess;
   int fd = -1;
-  SYSCHECKGOTO(fd = socket(sock->addr.sa.sa_family, SOCK_STREAM, 0), "socket", ret, cleanup);
+  int proto = 262;
+  if (ncclGetEnv("NCCL_MPTCP_DISABLE"))
+    proto = 0;
+
+  SYSCHECKGOTO(fd = socket(sock->addr.sa.sa_family, SOCK_STREAM, proto), "socket", ret, cleanup);
   // if sock->fd is valid, close it and reuse its number
   if (sock->fd != -1) {
     SYSCHECKGOTO(dup2(fd, sock->fd), "dup2", ret, cleanup);

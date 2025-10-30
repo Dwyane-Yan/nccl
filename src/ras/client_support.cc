@@ -165,10 +165,16 @@ ncclResult_t rasClientInitSocket() {
   const char* clientAddr = "localhost:" STR(NCCL_RAS_CLIENT_PORT);
   union ncclSocketAddress addr;
   const int opt = 1;
+  int proto = 262;
   if (const char* env = ncclGetEnv("NCCL_RAS_ADDR"))
     clientAddr = env;
+  if (ncclGetEnv("NCCL_MPTCP_DISABLE")) {
+    proto = 0;
+    INFO(NCCL_INIT|NCCL_RAS, "YGYG mptcp disable");
+  }
   NCCLCHECKGOTO(ncclSocketGetAddrFromString(&addr, clientAddr), ret, fail);
-  SYSCHECKGOTO(rasClientListeningSocket = socket(addr.sa.sa_family, SOCK_STREAM, 0), "socket", ret, fail);
+  SYSCHECKGOTO(rasClientListeningSocket = socket(addr.sa.sa_family, SOCK_STREAM, proto), "socket", ret, fail);
+  INFO(NCCL_INIT|NCCL_RAS, "YGYG niubi");
   SYSCHECKGOTO(setsockopt(rasClientListeningSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)),
                "setsockopt", ret, fail);
 #if defined(SO_REUSEPORT)

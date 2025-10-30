@@ -161,7 +161,10 @@ retry:
   for (struct addrinfo* ai = addrInfo; ai; ai = ai->ai_next) {
     char hostBuf[NI_MAXHOST], portBuf[NI_MAXSERV];
     int err;
-    sock = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
+    if (ai->ai_socktype == SOCK_STREAM && !getenv("NCCL_MPTCP_DISABLE"))
+	sock = socket(ai->ai_family, ai->ai_socktype, 262);
+    else
+	sock = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
     if (sock == -1) {
       perror("socket");
       continue;
